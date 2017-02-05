@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Http, Headers } from '@angular/http';
-import { Observable } from 'rxjs';
+import { DataService, Todo } from './data.service';
 
 @Component({
   selector: 'app-root',
@@ -13,39 +12,15 @@ export class AppComponent implements OnInit {
   todos: Todo[] = [];
   filterTodo: string;
   isAllComplete: boolean;
-  private headers = new Headers({
-    'Authorization': 'token c4178561-abf7-4f8b-8afd-53bdea8ed2aa',
-    'Content-Type': 'application/json'
-  });
   isDataSyncing = false;
 
-  constructor(private http: Http) {
+  constructor(private dataSvc: DataService) {
   }
 
   ngOnInit() {
-    this.getTodos().subscribe(data => {
+    this.dataSvc.getTodos().subscribe(data => {
       this.todos = data || [];
     });
-  }
-
-  getTodos(): Observable<Todo[]> {
-    return this.http.get('/me/todomvc', {headers: this.headers})
-      .map(res => res.json())
-      .catch(error => {
-        // TODO: add real error handling
-        console.log(error);
-        return Observable.of<Todo[]>([]);
-      });
-  }
-
-  saveTodos(todos: Todo[]) {
-    return this.http.post('/me/todomvc', todos, {headers: this.headers})
-      .map(res => res.json())
-      .catch(error => {
-        // TODO: add real error handling
-        console.log(error);
-        return Observable.throw(error.json());
-      });
   }
 
   onEnter() {
@@ -60,7 +35,7 @@ export class AppComponent implements OnInit {
       text: this.todo,
       completed: false
     });
-    this.saveTodos(newtodos).subscribe(data => {
+    this.dataSvc.saveTodos(newtodos).subscribe(data => {
       this.todos = data || [];
       this.todo = '';
       this.isDataSyncing = false;
@@ -86,7 +61,7 @@ export class AppComponent implements OnInit {
     console.log(todoIdx);
     let newtodos = Object.assign([], this.todos);
     newtodos.splice(todoIdx, 1);
-    this.saveTodos(newtodos).subscribe(data => {
+    this.dataSvc.saveTodos(newtodos).subscribe(data => {
       this.todos = data || [];
       this.isDataSyncing = false;
     }, error => {
@@ -101,10 +76,4 @@ export class AppComponent implements OnInit {
   filterTodos(filterTodo: string) {
     this.filterTodo = filterTodo;
   }
-}
-
-export class Todo {
-  id: number;
-  text: string;
-  completed: boolean;
 }
