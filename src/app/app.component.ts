@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Http } from '@angular/http';
 
 @Component({
   selector: 'app-root',
@@ -10,6 +11,10 @@ export class AppComponent {
   inputHint = 'What needs to be done?';
   todos: Array<any> = [];
   filterTodo: string;
+  isAllComplete: boolean;
+
+  constructor(private http: Http) {
+  }
 
   onEnter() {
     this.todos.push({
@@ -17,6 +22,21 @@ export class AppComponent {
       completed: false
     });
     this.todo = '';
+  }
+
+  toggleAll() {
+    if (this.isAllComplete) {
+      this.todos.forEach(todo => { todo.completed = false; });
+      this.isAllComplete = false;
+    }
+    else {
+      this.todos.forEach(todo => { todo.completed = true; });
+      this.isAllComplete = true;
+    }
+  }
+
+  removeTodo(index) {
+    this.todos.splice(index, 1);
   }
 
   clearCompleted() {
