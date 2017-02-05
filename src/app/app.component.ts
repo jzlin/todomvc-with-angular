@@ -11,7 +11,10 @@ export class AppComponent {
   todos: Array<any> = [];
 
   onEnter() {
-    this.todos.push(this.todo);
+    this.todos.push({
+      text: this.todo,
+      completed: false
+    });
     this.todo = '';
   }
 }
