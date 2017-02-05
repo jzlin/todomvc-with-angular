@@ -9,6 +9,7 @@ export class AppComponent {
   todo: string;
   inputHint = 'What needs to be done?';
   todos: Array<any> = [];
+  filterTodo: string;
 
   onEnter() {
     this.todos.push({
@@ -20,5 +21,9 @@ export class AppComponent {
 
   clearCompleted() {
     this.todos = this.todos.filter(todo => { return !todo.completed; });
+  }
+
+  filterTodos(filterTodo: string) {
+    this.filterTodo = filterTodo;
   }
 }
