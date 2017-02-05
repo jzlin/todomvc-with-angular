@@ -6,10 +6,12 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  todo: string;
   inputHint = 'What needs to be done?';
   todos: Array<any> = [];
 
-  onEnter(value: string) {
-    this.todos.push(value);
+  onEnter() {
+    this.todos.push(this.todo);
+    this.todo = '';
   }
 }
