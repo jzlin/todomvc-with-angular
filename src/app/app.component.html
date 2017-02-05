@@ -2,7 +2,7 @@
 <section class="todoapp">
   <header class="header">
     <app-title></app-title>
-    <input class="new-todo" [placeholder]="inputHint" autofocus [(ngModel)]="todo" (keyup.enter)="onEnter()">
+    <input class="new-todo" [placeholder]="inputHint" autofocus [(ngModel)]="todo" (keyup.enter)="onEnter()" [disabled]="isDataSyncing">
   </header>
   <!-- This section should be hidden by default and shown when there are todos -->
   <section class="main" *ngIf="todos.length > 0">
@@ -15,7 +15,7 @@
         <div class="view">
           <input class="toggle" type="checkbox" [(ngModel)]="todo.completed">
           <label>{{todo.text | uppercase}}</label>
-          <button class="destroy" (click)="removeTodo(i)"></button>
+          <button class="destroy" (click)="removeTodo(todo)"></button>
         </div>
         <input class="edit" value="Create a TodoMVC template">
       </li>
