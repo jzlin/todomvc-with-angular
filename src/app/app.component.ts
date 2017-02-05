@@ -17,4 +17,8 @@ export class AppComponent {
     });
     this.todo = '';
   }
+
+  clearCompleted() {
+    this.todos = this.todos.filter(todo => { return !todo.completed; });
+  }
 }
