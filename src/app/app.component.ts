@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService, Todo } from './data.service';
+import { Observable, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -13,11 +14,24 @@ export class AppComponent implements OnInit {
   filterTodo: string;
   isAllComplete: boolean;
   isDataSyncing = false;
+  private keyUp = new Subject<string>();
 
   constructor(private dataSvc: DataService) {
+    const observable = this.keyUp
+      .debounceTime(200)
+      .subscribe((data) => {
+        this.dataSvc.saveTodoInputText(this.todo).subscribe(data => {
+          // console.log(data);
+        }, error => {
+          console.log(error);
+        });
+      });
   }
 
   ngOnInit() {
+    this.dataSvc.getTodoInputText().subscribe(data => {
+      this.todo = data || '';
+    });
     this.dataSvc.getTodos().subscribe(data => {
       this.todos = data || [];
     });
@@ -58,7 +72,6 @@ export class AppComponent implements OnInit {
   removeTodo(todo: Todo) {
     this.isDataSyncing = true;
     let todoIdx = this.todos.indexOf(todo);
-    console.log(todoIdx);
     let newtodos = Object.assign([], this.todos);
     newtodos.splice(todoIdx, 1);
     this.dataSvc.saveTodos(newtodos).subscribe(data => {
@@ -75,5 +88,23 @@ export class AppComponent implements OnInit {
 
   filterTodos(filterTodo: string) {
     this.filterTodo = filterTodo;
+  }
+
+  enterEditMode(todo: Todo) {
+    todo.editingText = todo.text;
+    todo.isEditMode = true;
+  }
+
+  updateTodo(todo: Todo) {
+    this.isDataSyncing = true;
+    let todoIdx = this.todos.indexOf(todo);
+    let newtodos = Object.assign([], this.todos);
+    newtodos[todoIdx].text = newtodos[todoIdx].editingText;
+    this.dataSvc.saveTodos(newtodos).subscribe(data => {
+      this.todos = data || [];
+      this.isDataSyncing = false;
+    }, error => {
+      this.isDataSyncing = false;
+    });
   }
 }

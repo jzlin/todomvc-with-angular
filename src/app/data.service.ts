@@ -17,12 +17,39 @@ export class DataService {
       .catch(error => {
         // TODO: add real error handling
         console.log(error);
-        return Observable.of<Todo[]>([]);
+        return Observable.throw(error.json());
       });
   }
 
   saveTodos(todos: Todo[]) {
-    return this.http.post('/me/todomvc', todos, {headers: this.headers})
+    let newTodos = todos.map(todo => {
+      return {
+        id: todo.id,
+        text: todo.text,
+        completed: todo.completed
+      };
+    });
+    return this.http.post('/me/todomvc', newTodos, {headers: this.headers})
+      .map(res => res.json())
+      .catch(error => {
+        // TODO: add real error handling
+        console.log(error);
+        return Observable.throw(error.json());
+      });
+  }
+
+  getTodoInputText(): Observable<string> {
+    return this.http.get('me/todomvcinputtext', {headers: this.headers})
+      .map(res => res.json().text)
+      .catch(error => {
+        // TODO: add real error handling
+        console.log(error);
+        return Observable.throw(error.json());
+      });
+  }
+
+  saveTodoInputText(text: string) {
+    return this.http.post('/me/todomvcinputtext', { text: text }, {headers: this.headers})
       .map(res => res.json())
       .catch(error => {
         // TODO: add real error handling
@@ -37,4 +64,6 @@ export class Todo {
   id: number;
   text: string;
   completed: boolean;
+  isEditMode: boolean;
+  editingText: string;
 }
